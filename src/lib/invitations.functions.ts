@@ -208,5 +208,13 @@ export const acceptInvitation = createServerFn({ method: "POST" })
         }
       }
     }
+
+    // The invitation already joined the user to their project, so the
+    // Project ID onboarding step (/member) must be skipped on first login.
+    await supabaseAdmin
+      .from("profiles")
+      .update({ setup_complete: true })
+      .eq("id", user.id);
+
     return { ok: true };
   });
