@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   
   ChevronRight,
@@ -10,6 +10,7 @@ import {
   PauseCircle,
   Video,
 } from "lucide-react";
+import { listProjectMembers } from "@/lib/invitations.functions";
 import { NewCategoryModal } from "./new-category-modal";
 import { NewTaskModal } from "./new-task-modal";
 import { TaskSection } from "./task-section";
@@ -103,11 +104,14 @@ function Breadcrumb({
 function ProjectHeader({
   project,
   taskCount,
+  memberCount,
   onNewCategory,
   showNewCategory = true,
 }: {
   project: Project;
   taskCount: number;
+  /** Real member count from project_members (0 while loading). */
+  memberCount: number;
   onNewCategory: () => void;
   /** Hidden on the standalone Requests view. */
   showNewCategory?: boolean;
@@ -120,7 +124,7 @@ function ProjectHeader({
         </h1>
         <p className="mt-1.5 text-sm text-warm-gray">
           {plural(project.categories.length, "module")} ·{" "}
-          {plural(taskCount, "task")} · {plural(project.members.length, "member")}
+          {plural(taskCount, "task")} · {plural(memberCount, "member")}
         </p>
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-2">
@@ -347,6 +351,23 @@ export function ProjectDetails({
     0,
   );
 
+  // Real member count from project_members; null while loading, shown as 0.
+  const [memberCount, setMemberCount] = useState<number | null>(null);
+  useEffect(() => {
+    let active = true;
+    setMemberCount(null);
+    listProjectMembers({ data: { projectRef: project.id } })
+      .then((rows) => {
+        if (active) setMemberCount(rows.length);
+      })
+      .catch(() => {
+        if (active) setMemberCount(0);
+      });
+    return () => {
+      active = false;
+    };
+  }, [project.id]);
+
   const openTaskLocation = openTaskId
     ? project.categories.flatMap((category) => {
         const task = category.tasks.find((item) => item.id === openTaskId);
@@ -383,6 +404,7 @@ export function ProjectDetails({
       <ProjectHeader
         project={project}
         taskCount={taskCount}
+        memberCount={memberCount ?? 0}
         onNewCategory={() => setCategoryModalOpen(true)}
         showNewCategory={subView === null}
       />
