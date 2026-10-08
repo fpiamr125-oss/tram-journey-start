@@ -10,6 +10,7 @@ import {
   PauseCircle,
   Video,
 } from "lucide-react";
+import { listProjectMembers } from "@/lib/invitations.functions";
 import { NewCategoryModal } from "./new-category-modal";
 import { NewTaskModal } from "./new-task-modal";
 import { TaskSection } from "./task-section";
