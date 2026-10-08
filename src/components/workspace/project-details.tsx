@@ -403,6 +403,7 @@ export function ProjectDetails({
       <ProjectHeader
         project={project}
         taskCount={taskCount}
+        memberCount={memberCount ?? 0}
         onNewCategory={() => setCategoryModalOpen(true)}
         showNewCategory={subView === null}
       />
