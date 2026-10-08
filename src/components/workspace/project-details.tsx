@@ -103,11 +103,14 @@ function Breadcrumb({
 function ProjectHeader({
   project,
   taskCount,
+  memberCount,
   onNewCategory,
   showNewCategory = true,
 }: {
   project: Project;
   taskCount: number;
+  /** Real member count from project_members (0 while loading). */
+  memberCount: number;
   onNewCategory: () => void;
   /** Hidden on the standalone Requests view. */
   showNewCategory?: boolean;
@@ -120,7 +123,7 @@ function ProjectHeader({
         </h1>
         <p className="mt-1.5 text-sm text-warm-gray">
           {plural(project.categories.length, "module")} ·{" "}
-          {plural(taskCount, "task")} · {plural(project.members.length, "member")}
+          {plural(taskCount, "task")} · {plural(memberCount, "member")}
         </p>
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-2">
